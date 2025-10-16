@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise'); // Usamos la versión con promesas de mysql2
 const { body, validationResult } = require('express-validator');
+const os = require('os');
 
 require('dotenv').config();
 
@@ -43,6 +44,20 @@ async function connectDB() {
 }
 
 connectDB();
+
+// Función para encontrar la IP local no-loopback
+const getLocalIp = () => {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      // Ignora direcciones que no sean IPv4 y las direcciones internas (loopback)
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return 'N/A';
+};
 
 // --- Validadores ---
 
@@ -98,7 +113,7 @@ const validateMoviePatch = [
 // --- Rutas ---
 
 app.get('/', (req, res) => {
-  res.send('¡Servidor Express con MariaDB funcionando!');
+  res.send(`¡Servidor Express con MariaDB funcionando! (Hostname: ${os.hostname()}, IP: ${getLocalIp()})`);
 });
 
 // GET /movies - Obtener todas las películas

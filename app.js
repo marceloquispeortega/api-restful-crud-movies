@@ -113,7 +113,7 @@ const validateMoviePatch = [
 // --- Rutas ---
 
 app.get('/', (req, res) => {
-  res.send(`¡Servidor Express con MariaDB funcionando! (Hostname: ${os.hostname()}, IP: ${getLocalIp()})`);
+  res.send(`¡Servidor Express con MariaDB funcionando! (Hostname: ${os.hostname()}, IP: ${getLocalIp()}:${port})`);
 });
 
 // GET /movies - Obtener todas las películas

@@ -10,6 +10,34 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// Configuración de prom-client
+const client = require('prom-client');
+const register = new client.Registry();
+// Habilita las métricas por defecto para Node.js (uso de memoria, CPU, etc.)
+client.collectDefaultMetrics({ register });
+
+const httpRequestDurationMicroseconds = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total de peticiones HTTP, etiquetadas por método, ruta y código de estado.',
+  labelNames: ['method', 'route', 'status_code'],
+});
+
+register.registerMetric(httpRequestDurationMicroseconds);
+
+// Implementar el middleware
+app.use((req, res, next) => {
+  // Cuando la respuesta finaliza, incrementa el contador.
+  res.on('finish', () => {
+    httpRequestDurationMicroseconds.inc({
+      method: req.method,
+      // Usa la ruta del endpoint (ej: /api/users)
+      route: req.route ? req.route.path : req.url, 
+      status_code: res.statusCode,
+    });
+  });
+  next();
+});
+
 // --- Configuración de la Conexión a MariaDB/MySQL ---
 let db;
 

@@ -144,6 +144,11 @@ app.get('/', (req, res) => {
   res.send(`¡Servidor Express con MariaDB funcionando! (Hostname: ${os.hostname()}, IP: ${getLocalIp()}:${port})`);
 });
 
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
 // GET /movies - Obtener todas las películas
 app.get('/movies', async (req, res) => {
   try {

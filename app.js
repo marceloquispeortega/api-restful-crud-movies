@@ -27,7 +27,10 @@ async function connectDB() {
       port: process.env.DB_PORT,
       waitForConnections: true,
       connectionLimit: 10,
-      queueLimit: 0
+      queueLimit: 0,
+      ssl: {
+        rejectUnauthorized: false
+      }
     });
     
     // Forzamos una conexión de prueba al pool para verificar que las credenciales son correctas.
